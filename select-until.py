@@ -41,8 +41,9 @@ def find_matching_point(view, sel, selector):
 	num = int(groups[1]) if groups[1] is not None else None
 	chars = groups[2] or groups[4]
 	regex = groups[3]
+	searchForward = isReverse ^ SelectUntilCommand.searchForward
 
-	if not isReverse:
+	if searchForward:
 		if num is not None: return sel.end() + num
 		elif regex is not None: return safe_end(view.find(regex, sel.end()))
 		else: return safe_end(view.find(chars, sel.end(), sublime.LITERAL))
@@ -98,6 +99,7 @@ class SelectUntilCommand(sublime_plugin.TextCommand):
 	#There's no way in the API to distinguish this from the user pressing esc, so
 	#we have to do it ourselves.
 	running = False
+	searchForward = True
 
 	def run(self, edit, extend):
 		#Make sure the view never refers to the quick panel - if we hit the shortcut
@@ -105,7 +107,10 @@ class SelectUntilCommand(sublime_plugin.TextCommand):
 		view = self.view.window().active_view_in_group(self.view.window().active_group())
 
 		if SelectUntilCommand.running:
+			SelectUntilCommand.searchForward = not SelectUntilCommand.searchForward
 			SelectUntilCommand.prevSelector = SelectUntilCommand.temp
+		else:
+			SelectUntilCommand.searchForward = True
 		SelectUntilCommand.running = True
 
 		#We have to use set_timeout here; otherwise the quick panel doesn't actually
@@ -114,9 +119,9 @@ class SelectUntilCommand(sublime_plugin.TextCommand):
 
 	def show_panel(self, view, extend):
 		oriSels = [ sel for sel in view.sel() ]
-
+		direction = "Next" if SelectUntilCommand.searchForward else "Previous"
 		v = view.window().show_input_panel(
-			"Select Until Next -- chars or [chars] or {count} or /regex/.  Use minus (-) to reverse search:",
+			"Select Until {} -- chars or [chars] or {{count}} or /regex/. Use minus (-) or press shortcut again to reverse search:".format(direction),
 			SelectUntilCommand.prevSelector,
 			lambda selector: on_done(view, extend),
 			lambda selector: on_change(view, oriSels, selector, extend),

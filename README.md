@@ -4,7 +4,7 @@ Fill a void in your Sublime Text multiple selection capabilities! This plugin al
 
 ## Usage
 
-- <kbd>ctrl/alt</kbd> + <kbd>shift</kbd> + <kbd>s</kbd>: pulls up an input field, where you can type:
+- <kbd>ctrl/alt</kbd> + <kbd>shift</kbd> + <kbd>s</kbd> once: pulls up an input field, where you can type:
 
 	- `search term` or `[search term]`: for each selection, select up to and including the first occurrence of the search term.
 	- `/regex search/`: select through the first occurrence of the regex.
@@ -12,6 +12,8 @@ Fill a void in your Sublime Text multiple selection capabilities! This plugin al
 	- `-[search term]`: select backwards up to and including the search term.
 	- `-/regex/`: backwards regex.
 	- `-{character count}`: select backwards a certain number of characters (`{-count}` works too).
+
+- <kbd>ctrl/alt</kbd> + <kbd>shift</kbd> + <kbd>s</kbd> a second time: reverse the search direction.
 
 - <kbd>ctrl/alt</kbd> + <kbd>shift</kbd> + <kbd>r</kbd>: reverse all selections (so if the insertion point is at the end of the selection, it is moved to the beginning, and vice versa).
 
