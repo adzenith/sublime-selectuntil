@@ -107,7 +107,8 @@ class SelectUntilCommand(sublime_plugin.TextCommand):
 		view = self.view.window().active_view_in_group(self.view.window().active_group())
 
 		if SelectUntilCommand.running:
-			if SelectUntilCommand.extend == extend:
+			#Don't switch direction if the panel is open but unfocussed
+			if view != self.view and SelectUntilCommand.extend == extend:
 				SelectUntilCommand.searchForward = not SelectUntilCommand.searchForward
 			SelectUntilCommand.prevSelector = SelectUntilCommand.temp
 		else:
