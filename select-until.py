@@ -30,18 +30,16 @@ def on_done(view, extend):
 	SelectUntilCommand.prevSelector = SelectUntilCommand.temp or SelectUntilCommand.prevSelector
 	clean_up(view)
 
-rSelector = re.compile("^(-?)(?:\{(-?\d+)\}|\[(.+)\]|/(.+)/)$")
+rSelector = re.compile("^(-?)(?:\{(-?\d+)\}|\[(.+)\]|/(.+)/|(.*))$")
 def find_matching_point(view, sel, selector):
 	if selector == "": return -1
 
 	result = rSelector.search(selector)
 
-	if result is None: return safe_end(view.find(selector, sel.end(), sublime.LITERAL))
-
 	groups = result.groups()
 	isReverse = (groups[0] == "-")
 	num = int(groups[1]) if groups[1] is not None else None
-	chars = groups[2]
+	chars = groups[2] or groups[4]
 	regex = groups[3]
 
 	if num is not None:
