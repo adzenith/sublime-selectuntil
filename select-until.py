@@ -14,6 +14,7 @@ def clean_up(view):
 	view.erase_regions("select-until-extended")
 	view.erase_regions("select-until")
 	view.erase_regions("select-until-originals")
+	SelectUntilCommand.running = False
 
 def on_done(view, extend):
 	if extend:
@@ -77,8 +78,10 @@ def on_change(view, oriSels, selector, extend):
 
 	view.add_regions("select-until-originals", oriSels, "comment", "", sublime.DRAW_EMPTY)
 	if extend:
+		view.erase_regions("select-until")
 		view.add_regions("select-until-extended", extendedSels, "entity", "", sublime.DRAW_OUTLINED)
 	else:
+		view.erase_regions("select-until-extended")
 		view.add_regions("select-until", newSels, "entity", "", sublime.DRAW_EMPTY)
 
 def on_cancel(view, oriSels):
@@ -93,8 +96,25 @@ class SelectUntilCommand(sublime_plugin.TextCommand):
 	temp = ""
 	prevSelector = ""
 
+	#If we get called again while the quick panel's up, on_cancel gets called.
+	#There's no way in the API to distinguish this from the user pressing esc, so
+	#we have to do it ourselves.
+	running = False
+
 	def run(self, edit, extend):
-		view = self.view
+		#Make sure the view never refers to the quick panel - if we hit the shortcut
+		#while the panel is up, the wrong view is targetted.
+		view = self.view.window().active_view_in_group(self.view.window().active_group())
+
+		if SelectUntilCommand.running:
+			SelectUntilCommand.prevSelector = SelectUntilCommand.temp
+		SelectUntilCommand.running = True
+
+		#We have to use set_timeout here; otherwise the quick panel doesn't actually
+		#update correctly if we open it a second time. Seems to be a bug in Sublime.
+		sublime.set_timeout(lambda : self.show_panel(view, extend), 0)
+
+	def show_panel(self, view, extend):
 		oriSels = [ sel for sel in view.sel() ]
 
 		v = view.window().show_input_panel(
