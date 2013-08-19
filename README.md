@@ -9,9 +9,6 @@ Fill a void in your Sublime Text multiple selection capabilities! This plugin al
 	- `search term` or `[search term]`: for each selection, select up to and including the first occurrence of the search term.
 	- `/regex search/`: select through the first occurrence of the regex.
 	- `{character count}`: select forward the given number of characters.
-	- `-[search term]`: select backwards up to and including the search term.
-	- `-/regex/`: backwards regex.
-	- `-{character count}`: select backwards a certain number of characters (`{-count}` works too).
 
 - <kbd>ctrl/alt</kbd> + <kbd>shift</kbd> + <kbd>s</kbd> a second time: reverse the search direction.
 

@@ -30,18 +30,17 @@ def on_done(view, extend):
 	SelectUntilCommand.prevSelector = SelectUntilCommand.temp or SelectUntilCommand.prevSelector
 	clean_up(view)
 
-rSelector = re.compile("^(-?)(?:\{(-?\d+)\}|\[(.+)\]|/(.+)/|(.*))$")
+rSelector = re.compile("^\{(-?\d+)\}|\[(.+)\]|/(.+)/|(.*)$")
 def find_matching_point(view, sel, selector):
 	if selector == "": return -1
 
 	result = rSelector.search(selector)
 
 	groups = result.groups()
-	isReverse = (groups[0] == "-")
-	num = int(groups[1]) if groups[1] is not None else None
-	chars = groups[2] or groups[4]
-	regex = groups[3]
-	searchForward = isReverse ^ SelectUntilCommand.searchForward
+	num = int(groups[0]) if groups[0] is not None else None
+	chars = groups[1] or groups[3]
+	regex = groups[2]
+	searchForward = SelectUntilCommand.searchForward
 
 	if searchForward:
 		if num is not None: return sel.end() + num
@@ -124,7 +123,7 @@ class SelectUntilCommand(sublime_plugin.TextCommand):
 		oriSels = [ sel for sel in view.sel() ]
 		direction = "Next" if SelectUntilCommand.searchForward else "Previous"
 		v = view.window().show_input_panel(
-			"Select Until {} -- chars or [chars] or {{count}} or /regex/. Use minus (-) or press shortcut again to reverse search:".format(direction),
+			"Select Until {} -- chars or [chars] or {{count}} or /regex/. Press shortcut again to reverse search:".format(direction),
 			SelectUntilCommand.prevSelector,
 			lambda selector: on_done(view, extend),
 			lambda selector: on_change(view, oriSels, selector, extend),
