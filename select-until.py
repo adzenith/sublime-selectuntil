@@ -107,11 +107,13 @@ class SelectUntilCommand(sublime_plugin.TextCommand):
 		view = self.view.window().active_view_in_group(self.view.window().active_group())
 
 		if SelectUntilCommand.running:
-			SelectUntilCommand.searchForward = not SelectUntilCommand.searchForward
+			if SelectUntilCommand.extend == extend:
+				SelectUntilCommand.searchForward = not SelectUntilCommand.searchForward
 			SelectUntilCommand.prevSelector = SelectUntilCommand.temp
 		else:
 			SelectUntilCommand.searchForward = True
 		SelectUntilCommand.running = True
+		SelectUntilCommand.extend = extend
 
 		#We have to use set_timeout here; otherwise the quick panel doesn't actually
 		#update correctly if we open it a second time. Seems to be a bug in Sublime.
